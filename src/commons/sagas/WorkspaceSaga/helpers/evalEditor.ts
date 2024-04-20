@@ -7,14 +7,7 @@ import { WORKSPACE_BASE_PATHS } from '../../../../pages/fileSystem/createInBrows
 import { OverallState } from '../../../application/ApplicationTypes';
 import { retrieveFilesInWorkspaceAsRecord } from '../../../fileSystem/utils';
 import { actions } from '../../../utils/ActionsHelper';
-import { makeElevatedContext } from '../../../utils/JsSlangHelper';
-import {
-  EditorTabState,
-  EVAL_EDITOR,
-  EVAL_SILENT,
-  WorkspaceLocation
-} from '../../../workspace/WorkspaceTypes';
-import { blockExtraMethods } from './blockExtraMethods';
+import { EditorTabState, EVAL_EDITOR, WorkspaceLocation } from '../../../workspace/WorkspaceTypes';
 import { clearContext } from './clearContext';
 import { evalCode } from './evalCode';
 import { insertDebuggerStatements } from './insertDebuggerStatements';
@@ -23,30 +16,21 @@ export function* evalEditor(
   workspaceLocation: WorkspaceLocation
 ): Generator<StrictEffect, void, any> {
   const [
-    prepend,
     activeEditorTabIndex,
     editorTabs,
     execTime,
     isFolderModeEnabled,
     fileSystem,
     remoteExecutionSession
-  ]: [
-    string,
-    number | null,
-    EditorTabState[],
-    number,
-    boolean,
-    FSModule,
-    DeviceSession | undefined
-  ] = yield select((state: OverallState) => [
-    state.workspaces[workspaceLocation].programPrependValue,
-    state.workspaces[workspaceLocation].activeEditorTabIndex,
-    state.workspaces[workspaceLocation].editorTabs,
-    state.workspaces[workspaceLocation].execTime,
-    state.workspaces[workspaceLocation].isFolderModeEnabled,
-    state.fileSystem.inBrowserFileSystem,
-    state.session.remoteExecutionSession
-  ]);
+  ]: [number | null, EditorTabState[], number, boolean, FSModule, DeviceSession | undefined] =
+    yield select((state: OverallState) => [
+      state.workspaces[workspaceLocation].activeEditorTabIndex,
+      state.workspaces[workspaceLocation].editorTabs,
+      state.workspaces[workspaceLocation].execTime,
+      state.workspaces[workspaceLocation].isFolderModeEnabled,
+      state.fileSystem.inBrowserFileSystem,
+      state.session.remoteExecutionSession
+    ]);
 
   if (activeEditorTabIndex === null) {
     throw new Error('Cannot evaluate program without an entrypoint file.');
@@ -90,31 +74,9 @@ export function* evalEditor(
       );
     }
 
-    // Evaluate the prepend silently with a privileged context, if it exists
-    if (prepend.length) {
-      const elevatedContext = makeElevatedContext(context);
-      const prependFilePath = '/prepend.js';
-      const prependFiles = {
-        [prependFilePath]: prepend
-      };
-      yield call(
-        evalCode,
-        prependFiles,
-        prependFilePath,
-        elevatedContext,
-        execTime,
-        workspaceLocation,
-        EVAL_SILENT
-      );
-      // Block use of methods from privileged context
-      yield* blockExtraMethods(elevatedContext, context, execTime, workspaceLocation);
-    }
-
     yield call(
       evalCode,
-      files,
-      entrypointFilePath,
-      context,
+      editorTabs[activeEditorTabIndex].value,
       execTime,
       workspaceLocation,
       EVAL_EDITOR

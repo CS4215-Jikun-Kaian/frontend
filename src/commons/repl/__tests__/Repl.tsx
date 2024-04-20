@@ -9,7 +9,6 @@ import {
   ResultOutput,
   RunningOutput
 } from '../../application/ApplicationTypes';
-import { mockTypeError } from '../../mocks/ContextMocks';
 import Repl, { Output } from '../Repl';
 
 const mockRunningOutput: RunningOutput = {
@@ -30,7 +29,7 @@ const mockResultOutput: ResultOutput = {
 
 const mockErrorOutput: ErrorOutput = {
   type: 'errors',
-  errors: [mockTypeError()],
+  error: new Error(),
   consoleLogs: []
 };
 

@@ -46,7 +46,6 @@ export function* evalTestCode(
    *  since debugger is presently disabled in assessment and grading environments
    */
   if (result.status === 'error') {
-    yield put(actions.evalInterpreterError(context.errors, workspaceLocation));
     yield put(actions.evalTestcaseFailure(context.errors, workspaceLocation, index));
   } else if (result.status === 'finished') {
     // Execution of the testcase is successful, i.e. no errors were raised

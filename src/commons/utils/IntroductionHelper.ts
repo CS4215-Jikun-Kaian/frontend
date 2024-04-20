@@ -4,10 +4,9 @@ import { SALanguage, styliseSublanguage } from '../application/ApplicationTypes'
 import { Links } from './Constants';
 
 const MAIN_INTRODUCTION = `
-Welcome to the Source Academy playground!
+Welcome to the Source Academy playground stripped down for a CS4215 project!
 
-The book [_Structure and Interpretation of Computer Programs, JavaScript Edition_](${Links.textbook})
-uses JavaScript sublanguages that we call [_Source_](${Links.sourceDocs}). `;
+You can run basic Go programs right here in your browser based on our virtual machine implementation of Go. `;
 
 const HOTKEYS_INTRODUCTION = `
 

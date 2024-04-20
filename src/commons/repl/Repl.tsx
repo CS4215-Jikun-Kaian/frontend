@@ -1,7 +1,6 @@
 import { Card, Classes, Pre } from '@blueprintjs/core';
 import { Ace } from 'ace-builds';
 import classNames from 'classnames';
-import { parseError } from 'js-slang';
 import { Chapter, Variant } from 'js-slang/dist/types';
 import React from 'react';
 import { HotKeys } from 'react-hotkeys';
@@ -110,7 +109,7 @@ export const Output: React.FC<OutputProps> = props => {
       if (props.output.consoleLogs.length === 0) {
         return (
           <Card>
-            <Pre className="error-output">{parseError(props.output.errors)}</Pre>
+            <Pre className="error-output">{props.output.error.message}</Pre>
           </Card>
         );
       } else {
@@ -118,7 +117,7 @@ export const Output: React.FC<OutputProps> = props => {
           <Card>
             <Pre className="log-output">{props.output.consoleLogs.join('\n')}</Pre>
             <br />
-            <Pre className="error-output">{parseError(props.output.errors)}</Pre>
+            <Pre className="error-output">{props.output.error.message}</Pre>
           </Card>
         );
       }

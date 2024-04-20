@@ -2,7 +2,6 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
-import NavigationBar from '../navigationBar/NavigationBar';
 import Constants from '../utils/Constants';
 import { useLocalStorageState, useSession } from '../utils/Hooks';
 import { defaultWorkspaceSettings, WorkspaceSettingsContext } from '../WorkspaceSettingsContext';
@@ -73,7 +72,6 @@ const Application: React.FC = () => {
   return (
     <WorkspaceSettingsContext.Provider value={[workspaceSettings, setWorkspaceSettings]}>
       <div className="Application">
-        <NavigationBar />
         <div className="Application__main">
           <Outlet />
         </div>

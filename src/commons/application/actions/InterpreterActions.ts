@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { SourceError, Value } from 'js-slang/dist/types';
+import { Value } from 'js-slang/dist/types';
 
 import { WorkspaceLocation } from '../../workspace/WorkspaceTypes';
 import {
@@ -46,8 +46,8 @@ export const evalTestcaseFailure = createAction(
 
 export const evalInterpreterError = createAction(
   EVAL_INTERPRETER_ERROR,
-  (errors: SourceError[], workspaceLocation: WorkspaceLocation) => ({
-    payload: { type: 'errors', errors, workspaceLocation }
+  (error: Error, workspaceLocation: WorkspaceLocation) => ({
+    payload: { type: 'errors', error, workspaceLocation }
   })
 );
 

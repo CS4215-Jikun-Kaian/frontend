@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { Context, Result } from 'js-slang';
+import { Result } from 'js-slang';
 import { Chapter, Variant } from 'js-slang/dist/types';
 
 import { SET_IS_EDITOR_READONLY } from '../../features/sourceRecorder/sourcecast/SourcecastTypes';
@@ -438,13 +438,9 @@ export const promptAutocomplete = createAction(
 
 export const notifyProgramEvaluated = createAction(
   NOTIFY_PROGRAM_EVALUATED,
-  (
-    result: any,
-    lastDebuggerResult: any,
-    code: string,
-    context: Context,
-    workspaceLocation?: WorkspaceLocation
-  ) => ({ payload: { result, lastDebuggerResult, code, context, workspaceLocation } })
+  (result: any, code: string, workspaceLocation?: WorkspaceLocation) => ({
+    payload: { result, code, workspaceLocation }
+  })
 );
 
 export const toggleUsingSubst = createAction(

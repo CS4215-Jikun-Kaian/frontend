@@ -1,5 +1,4 @@
 import { ActionMatchingPattern } from '@redux-saga/types';
-import * as Sentry from '@sentry/browser';
 import {
   ActionPattern,
   ForkEffect,
@@ -22,7 +21,6 @@ function handleUncaughtError(error: any) {
     // @ts-ignore
     import('react-error-overlay').then(reo => reo.reportRuntimeError(error));
   }
-  Sentry.captureException(error);
   console.error(error);
 }
 

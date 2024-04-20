@@ -2,6 +2,7 @@
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/ext-searchbox';
 import 'ace-builds/src-noconflict/ext-settings_menu';
+import 'ace-builds/src-noconflict/mode-golang';
 import 'js-slang/dist/editors/ace/theme/source';
 
 import { Classes } from '@blueprintjs/core';

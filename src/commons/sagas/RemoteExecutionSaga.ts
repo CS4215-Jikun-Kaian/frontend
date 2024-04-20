@@ -1,6 +1,5 @@
 import { SlingClient } from '@sourceacademy/sling-client';
 import { assemble, compileFiles, Context } from 'js-slang';
-import { ExceptionError } from 'js-slang/dist/errors/errors';
 import { Chapter, Variant } from 'js-slang/dist/types';
 import _ from 'lodash';
 import { SagaIterator } from 'redux-saga';
@@ -31,11 +30,6 @@ import { actions } from '../utils/ActionsHelper';
 import { MaybePromise } from '../utils/TypeHelper';
 import { fetchDevices, getDeviceWSEndpoint } from './RequestsSaga';
 import { safeTakeEvery as takeEvery, safeTakeLatest as takeLatest } from './SafeEffects';
-
-const dummyLocation = {
-  start: { line: 0, column: 0 },
-  end: { line: 0, column: 0 }
-};
 
 export function* remoteExecutionSaga(): SagaIterator {
   yield takeLatest(REMOTE_EXEC_FETCH_DEVICES, function* () {
@@ -162,8 +156,8 @@ export function* remoteExecutionSaga(): SagaIterator {
             store.dispatch(actions.handleConsoleLog(workspace, `${message}`));
             break;
           case 'error': {
-            const error = new ExceptionError(new Error(`${message}`), dummyLocation);
-            store.dispatch(actions.evalInterpreterError([error], workspace));
+            // const error = new ExceptionError(new Error(`${message}`), dummyLocation);
+            // store.dispatch(actions.evalInterpreterError([error], workspace));
             break;
           }
           case 'result':
@@ -296,7 +290,7 @@ export function* remoteExecutionSaga(): SagaIterator {
       deviceTypesById.get(session.device.type)?.internalFunctions
     );
     if (!compiled) {
-      yield put(actions.evalInterpreterError(context.errors, session.workspace));
+      // yield put(actions.evalInterpreterError(context.errors, session.workspace));
       return;
     }
     const assembled = assemble(compiled);

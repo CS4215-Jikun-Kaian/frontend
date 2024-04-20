@@ -55,6 +55,6 @@ export const getModeString = (chapter: Chapter, variant: Variant, library: strin
     case Chapter.FULL_C:
       return 'c_cpp';
     default:
-      return `source${chapter}${variant}${library}`;
+      return `golang`;
   }
 };

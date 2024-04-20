@@ -361,7 +361,7 @@ const newWorkspaceReducer = createReducer(defaultWorkspaceManager, builder => {
         } as ResultOutput);
       }
 
-      state[workspaceLocation].output = newOutput;
+      state[workspaceLocation].output = [action.payload.value];
       state[workspaceLocation].isRunning = false;
     })
     .addCase(evalTestcaseSuccess, (state, action) => {
@@ -386,13 +386,13 @@ const newWorkspaceReducer = createReducer(defaultWorkspaceManager, builder => {
       if (lastOutput !== undefined && lastOutput.type === 'running') {
         newOutput = state[workspaceLocation].output.slice(0, -1).concat({
           type: action.payload.type,
-          errors: action.payload.errors,
+          error: action.payload.error,
           consoleLogs: lastOutput.consoleLogs
         } as ErrorOutput);
       } else {
         newOutput = state[workspaceLocation].output.concat({
           type: action.payload.type,
-          errors: action.payload.errors,
+          error: action.payload.error,
           consoleLogs: []
         } as ErrorOutput);
       }
@@ -891,9 +891,7 @@ const oldWorkspaceReducer: Reducer<WorkspaceManagerState, SourceActionType> = (
       const debuggerContext = {
         ...state[workspaceLocation].debuggerContext,
         result: action.payload.result,
-        lastDebuggerResult: action.payload.lastDebuggerResult,
         code: action.payload.code,
-        context: action.payload.context,
         workspaceLocation: action.payload.workspaceLocation
       };
       return {

@@ -2,7 +2,6 @@ import 'src/i18n/i18n';
 import 'src/styles/index.scss';
 
 import { Button, OverlaysProvider } from '@blueprintjs/core';
-import * as Sentry from '@sentry/browser';
 import { setModulesStaticURL } from 'js-slang/dist/modules/loader';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
@@ -15,16 +14,6 @@ import { store } from 'src/pages/createStore';
 import ApplicationWrapper from './commons/application/ApplicationWrapper';
 import { createInBrowserFileSystem } from './pages/fileSystem/createInBrowserFileSystem';
 
-if (Constants.sentryDsn) {
-  Sentry.init({
-    dsn: Constants.sentryDsn,
-    environment: Constants.sourceAcademyEnvironment,
-    release: `cadet-frontend@${Constants.sourceAcademyVersion}`
-  });
-  const userId = store.getState().session.userId;
-  Sentry.setUser(typeof userId !== 'undefined' ? { id: userId.toString() } : null);
-}
-
 const rootContainer = document.getElementById('root') as HTMLElement;
 const root = createRoot(rootContainer);
 (window as any).__REDUX_STORE__ = store; // need this for slang's display
@@ -35,7 +24,6 @@ console.log(
 );
 
 setModulesStaticURL(Constants.moduleBackendUrl);
-console.log(`Using module backend: ${Constants.moduleBackendUrl}`);
 
 // Initialise the browser file system before rendering to avoid race conditions on the file system.
 createInBrowserFileSystem(store)

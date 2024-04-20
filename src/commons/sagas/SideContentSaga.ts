@@ -42,9 +42,7 @@ export default function* SideContentSaga(): SagaIterator {
 
       const debuggerContext = {
         result: action.payload.result,
-        lastDebuggerResult: action.payload.lastDebuggerResult,
         code: action.payload.code,
-        context: action.payload.context,
         workspaceLocation: action.payload.workspaceLocation
       };
       yield put(actions.spawnSideContent(action.payload.workspaceLocation, debuggerContext));

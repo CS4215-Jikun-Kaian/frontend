@@ -5,9 +5,7 @@ import Phaser from 'phaser';
 import { SagaIterator } from 'redux-saga';
 import { call, put, select } from 'redux-saga/effects';
 import CseMachine from 'src/features/cseMachine/CseMachine';
-import { EVAL_STORY } from 'src/features/stories/StoriesTypes';
 
-import { EventType } from '../../../features/achievement/AchievementTypes';
 import DataVisualizer from '../../../features/dataVisualizer/dataVisualizer';
 import { WORKSPACE_BASE_PATHS } from '../../../pages/fileSystem/createInBrowserFileSystem';
 import {
@@ -22,10 +20,9 @@ import {
   UPDATE_EDITOR_HIGHLIGHTED_LINES,
   UPDATE_EDITOR_HIGHLIGHTED_LINES_CONTROL
 } from '../../application/types/InterpreterTypes';
-import { Library, Testcase } from '../../assessment/AssessmentTypes';
+import { Library } from '../../assessment/AssessmentTypes';
 import { Documentation } from '../../documentation/Documentation';
 import { writeFileRecursively } from '../../fileSystem/utils';
-import { resetSideContent } from '../../sideContent/SideContentActions';
 import { actions } from '../../utils/ActionsHelper';
 import {
   highlightClean,
@@ -44,9 +41,7 @@ import {
   CHAPTER_SELECT,
   EditorTabState,
   EVAL_EDITOR,
-  EVAL_EDITOR_AND_TESTCASES,
   EVAL_REPL,
-  EVAL_TESTCASE,
   NAV_DECLARATION,
   PLAYGROUND_EXTERNAL_SELECT,
   PROMPT_AUTOCOMPLETE,
@@ -55,10 +50,9 @@ import {
   TOGGLE_FOLDER_MODE,
   UPDATE_EDITOR_VALUE
 } from '../../workspace/WorkspaceTypes';
-import { safeTakeEvery as takeEvery, safeTakeLeading as takeLeading } from '../SafeEffects';
+import { safeTakeEvery as takeEvery } from '../SafeEffects';
 import { evalCode } from './helpers/evalCode';
 import { evalEditor } from './helpers/evalEditor';
-import { runTestCase } from './helpers/runTestCase';
 
 export default function* WorkspaceSaga(): SagaIterator {
   let context: Context;
@@ -183,70 +177,72 @@ export default function* WorkspaceSaga(): SagaIterator {
   yield takeEvery(
     PROMPT_AUTOCOMPLETE,
     function* (action: ReturnType<typeof actions.promptAutocomplete>): any {
-      const workspaceLocation = action.payload.workspaceLocation;
+      yield call(action.payload.callback);
+      return;
+      // const workspaceLocation = action.payload.workspaceLocation;
 
-      context = yield select((state: OverallState) => state.workspaces[workspaceLocation].context);
+      // context = yield select((state: OverallState) => state.workspaces[workspaceLocation].context);
 
-      const code: string = yield select((state: OverallState) => {
-        const prependCode = state.workspaces[workspaceLocation].programPrependValue;
-        // TODO: Hardcoded to make use of the first editor tab. Rewrite after editor tabs are added.
-        const editorCode = state.workspaces[workspaceLocation].editorTabs[0].value;
-        return [prependCode, editorCode] as [string, string];
-      });
-      const [prepend, editorValue] = code;
+      // const code: string = yield select((state: OverallState) => {
+      //   const prependCode = state.workspaces[workspaceLocation].programPrependValue;
+      //   // TODO: Hardcoded to make use of the first editor tab. Rewrite after editor tabs are added.
+      //   const editorCode = state.workspaces[workspaceLocation].editorTabs[0].value;
+      //   return [prependCode, editorCode] as [string, string];
+      // });
+      // const [prepend, editorValue] = code;
 
-      // Deal with prepended code
-      let autocompleteCode;
-      let prependLength = 0;
-      if (!prepend) {
-        autocompleteCode = editorValue;
-      } else {
-        prependLength = prepend.split('\n').length;
-        autocompleteCode = prepend + '\n' + editorValue;
-      }
+      // // Deal with prepended code
+      // let autocompleteCode;
+      // let prependLength = 0;
+      // if (!prepend) {
+      //   autocompleteCode = editorValue;
+      // } else {
+      //   prependLength = prepend.split('\n').length;
+      //   autocompleteCode = prepend + '\n' + editorValue;
+      // }
 
-      const [editorNames, displaySuggestions] = yield call(
-        getNames,
-        autocompleteCode,
-        action.payload.row + prependLength,
-        action.payload.column,
-        context
-      );
+      // const [editorNames, displaySuggestions] = yield call(
+      //   getNames,
+      //   autocompleteCode,
+      //   action.payload.row + prependLength,
+      //   action.payload.column,
+      //   context
+      // );
 
-      if (!displaySuggestions) {
-        yield call(action.payload.callback);
-        return;
-      }
+      // if (!displaySuggestions) {
+      //   yield call(action.payload.callback);
+      //   return;
+      // }
 
-      const editorSuggestions = editorNames.map((name: any) => {
-        return {
-          ...name,
-          caption: name.name,
-          value: name.name,
-          score: name.score ? name.score + 1000 : 1000, // Prioritize suggestions from code
-          name: undefined
-        };
-      });
+      // const editorSuggestions = editorNames.map((name: any) => {
+      //   return {
+      //     ...name,
+      //     caption: name.name,
+      //     value: name.name,
+      //     score: name.score ? name.score + 1000 : 1000, // Prioritize suggestions from code
+      //     name: undefined
+      //   };
+      // });
 
-      let chapterName = context.chapter.toString();
-      const variant = context.variant ?? Variant.DEFAULT;
-      if (variant !== Variant.DEFAULT) {
-        chapterName += '_' + variant;
-      }
+      // let chapterName = context.chapter.toString();
+      // const variant = context.variant ?? Variant.DEFAULT;
+      // if (variant !== Variant.DEFAULT) {
+      //   chapterName += '_' + variant;
+      // }
 
-      const builtinSuggestions = Documentation.builtins[chapterName] || [];
+      // const builtinSuggestions = Documentation.builtins[chapterName] || [];
 
-      const extLib = yield select(
-        (state: OverallState) => state.workspaces[workspaceLocation].externalLibrary
-      );
+      // const extLib = yield select(
+      //   (state: OverallState) => state.workspaces[workspaceLocation].externalLibrary
+      // );
 
-      const extLibSuggestions = Documentation.externalLibraries[extLib] || [];
+      // const extLibSuggestions = Documentation.externalLibraries[extLib] || [];
 
-      yield call(
-        action.payload.callback,
-        null,
-        editorSuggestions.concat(builtinSuggestions, extLibSuggestions)
-      );
+      // yield call(
+      //   action.payload.callback,
+      //   null,
+      //   editorSuggestions.concat(builtinSuggestions, extLibSuggestions)
+      // );
     }
   );
 
@@ -272,29 +268,9 @@ export default function* WorkspaceSaga(): SagaIterator {
     yield put(actions.beginInterruptExecution(workspaceLocation));
     yield put(actions.clearReplInput(workspaceLocation));
     yield put(actions.sendReplInputToOutput(code, workspaceLocation));
-    context = yield select((state: OverallState) => state.workspaces[workspaceLocation].context);
     // Reset old context.errors
     context.errors = [];
-    const codeFilePath = '/code.js';
-    const codeFiles = {
-      [codeFilePath]: code
-    };
-    yield call(evalCode, codeFiles, codeFilePath, context, execTime, workspaceLocation, EVAL_REPL);
-  });
-
-  yield takeEvery(EVAL_STORY, function* (action: ReturnType<typeof actions.evalStory>) {
-    const env = action.payload.env;
-    const code = action.payload.code;
-    const execTime: number = yield select(
-      (state: OverallState) => state.stories.envs[env].execTime
-    );
-    context = yield select((state: OverallState) => state.stories.envs[env].context);
-    const codeFilePath = '/code.js';
-    const codeFiles = {
-      [codeFilePath]: code
-    };
-    yield put(resetSideContent(`stories.${env}`));
-    yield call(evalCode, codeFiles, codeFilePath, context, execTime, 'stories', EVAL_STORY, env);
+    yield call(evalCode, code, execTime, workspaceLocation, EVAL_REPL);
   });
 
   yield takeEvery(DEBUG_RESUME, function* (action: ReturnType<typeof actions.debuggerResume>) {
@@ -309,22 +285,9 @@ export default function* WorkspaceSaga(): SagaIterator {
     yield put(actions.beginInterruptExecution(workspaceLocation));
     /** Clear the context, with the same chapter and externalSymbols as before. */
     yield put(actions.clearReplOutput(workspaceLocation));
-    context = yield select((state: OverallState) => state.workspaces[workspaceLocation].context);
     // TODO: Hardcoded to make use of the first editor tab. Rewrite after editor tabs are added.
     yield put(actions.setEditorHighlightedLines(workspaceLocation, 0, []));
-    const codeFilePath = '/code.js';
-    const codeFiles = {
-      [codeFilePath]: code
-    };
-    yield call(
-      evalCode,
-      codeFiles,
-      codeFilePath,
-      context,
-      execTime,
-      workspaceLocation,
-      DEBUG_RESUME
-    );
+    yield call(evalCode, code, execTime, workspaceLocation, DEBUG_RESUME);
   });
 
   yield takeEvery(DEBUG_RESET, function* (action: ReturnType<typeof actions.debuggerReset>) {
@@ -334,7 +297,6 @@ export default function* WorkspaceSaga(): SagaIterator {
     // TODO: Hardcoded to make use of the first editor tab. Rewrite after editor tabs are added.
     yield put(actions.setEditorHighlightedLines(workspaceLocation, 0, []));
     context.runtime.break = false;
-    yield put(actions.updateLastDebuggerResult(undefined, workspaceLocation));
   });
 
   yield takeEvery(
@@ -379,13 +341,6 @@ export default function* WorkspaceSaga(): SagaIterator {
       }
     }
   );
-
-  yield takeEvery(EVAL_TESTCASE, function* (action: ReturnType<typeof actions.evalTestcase>) {
-    yield put(actions.addEvent([EventType.RUN_TESTCASE]));
-    const workspaceLocation = action.payload.workspaceLocation;
-    const index = action.payload.testcaseId;
-    yield* runTestCase(workspaceLocation, index);
-  });
 
   yield takeEvery(CHAPTER_SELECT, function* (action: ReturnType<typeof actions.chapterSelect>) {
     const { workspaceLocation, chapter: newChapter, variant: newVariant } = action.payload;
@@ -530,35 +485,6 @@ export default function* WorkspaceSaga(): SagaIterator {
             column: result.start.column
           })
         );
-      }
-    }
-  );
-
-  yield takeLeading(
-    EVAL_EDITOR_AND_TESTCASES,
-    function* (action: ReturnType<typeof actions.runAllTestcases>) {
-      const { workspaceLocation } = action.payload;
-
-      yield call(evalEditor, workspaceLocation);
-
-      const testcases: Testcase[] = yield select(
-        (state: OverallState) => state.workspaces[workspaceLocation].editorTestcases
-      );
-      // Avoid displaying message if there are no testcases
-      if (testcases.length > 0) {
-        // Display a message to the user
-        yield call(showSuccessMessage, `Running all testcases!`, 2000);
-        for (const idx of testcases.keys()) {
-          // break each testcase up into separate event loop iterations
-          // so that the UI updates
-          yield new Promise(resolve => setTimeout(resolve, 0));
-
-          const programSucceeded: boolean = yield call(runTestCase, workspaceLocation, idx);
-          // Prematurely terminate if execution of the program failed (not the testcase)
-          if (!programSucceeded) {
-            return;
-          }
-        }
       }
     }
   );

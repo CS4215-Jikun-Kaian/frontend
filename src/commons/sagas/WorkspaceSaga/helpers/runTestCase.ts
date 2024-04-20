@@ -54,15 +54,7 @@ export function* runTestCase(
   const prependFiles = {
     [prependFilePath]: prepend
   };
-  yield call(
-    evalCode,
-    prependFiles,
-    prependFilePath,
-    elevatedContext,
-    execTime,
-    workspaceLocation,
-    EVAL_SILENT
-  );
+  yield call(evalCode, '', execTime, workspaceLocation, EVAL_SILENT);
 
   // Block use of methods from privileged context using a randomly generated blocking key
   // Then execute student program silently in the original workspace context
@@ -72,15 +64,7 @@ export function* runTestCase(
   const valueFiles = {
     [valueFilePath]: value
   };
-  yield call(
-    evalCode,
-    valueFiles,
-    valueFilePath,
-    context,
-    execTime,
-    workspaceLocation,
-    EVAL_SILENT
-  );
+  yield call(evalCode, '', execTime, workspaceLocation, EVAL_SILENT);
 
   // Halt execution if the student's code in the editor results in an error
   if (context.errors.length) {
@@ -97,15 +81,7 @@ export function* runTestCase(
     const postpendFiles = {
       [postpendFilePath]: postpend
     };
-    yield call(
-      evalCode,
-      postpendFiles,
-      postpendFilePath,
-      elevatedContext,
-      execTime,
-      workspaceLocation,
-      EVAL_SILENT
-    );
+    yield call(evalCode, '', execTime, workspaceLocation, EVAL_SILENT);
     yield* blockExtraMethods(elevatedContext, context, execTime, workspaceLocation, blockKey);
   }
   // Finally execute the testcase function call in the privileged context

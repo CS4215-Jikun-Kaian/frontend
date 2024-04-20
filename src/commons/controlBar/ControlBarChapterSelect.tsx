@@ -5,17 +5,12 @@ import { Chapter, Variant } from 'js-slang/dist/types';
 import React from 'react';
 
 import {
-  fullJSLanguage,
-  fullTSLanguage,
-  htmlLanguage,
   javaLanguages,
   pyLanguages,
   SALanguage,
   schemeLanguages,
-  sourceLanguages,
-  styliseSublanguage
+  sourceLanguages
 } from '../application/ApplicationTypes';
-import Constants from '../utils/Constants';
 import { useTypedSelector } from '../utils/Hooks';
 
 type ControlBarChapterSelectProps = DispatchProps & StateProps;
@@ -37,16 +32,10 @@ const chapterListRenderer: ItemListRenderer<SALanguage> = ({
   items
 }) => {
   const defaultChoices = items.filter(({ variant }) => variant === Variant.DEFAULT);
-  const variantChoices = items.filter(({ variant }) => variant !== Variant.DEFAULT);
 
   return (
     <Menu ulRef={itemsParentRef} style={{ display: 'flex', flexDirection: 'column' }}>
       {defaultChoices.map(renderItem)}
-      {variantChoices.length > 0 && (
-        <MenuItem key="variant-menu" text="Variants" icon="cog">
-          {variantChoices.map(renderItem)}
-        </MenuItem>
-      )}
     </Menu>
   );
 };
@@ -85,7 +74,6 @@ export const ControlBarChapterSelect: React.FC<ControlBarChapterSelectProps> = (
     // Full JS/TS version uses eval(), which is a huge security risk, so we only enable
     // for public deployments. HTML, while sandboxed, is treated the same way to be safe.
     // See https://github.com/source-academy/frontend/pull/2460#issuecomment-1528759912
-    ...(Constants.playgroundOnly ? [fullJSLanguage, fullTSLanguage, htmlLanguage] : []),
     ...schemeLanguages,
     ...pyLanguages,
     ...javaLanguages
@@ -102,7 +90,7 @@ export const ControlBarChapterSelect: React.FC<ControlBarChapterSelectProps> = (
     >
       <Button
         minimal
-        text={styliseSublanguage(sourceChapter, sourceVariant)}
+        text="Go"
         rightIcon={disabled ? null : IconNames.DOUBLE_CARET_VERTICAL}
         disabled={disabled}
       />

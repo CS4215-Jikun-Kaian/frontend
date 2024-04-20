@@ -18,13 +18,5 @@ export function* restoreExtraMethods(
   const restorerFiles = {
     [restorerFilePath]: restorer
   };
-  yield call(
-    evalCode,
-    restorerFiles,
-    restorerFilePath,
-    elevatedContext,
-    execTime,
-    workspaceLocation,
-    EVAL_SILENT
-  );
+  yield call(evalCode, '', execTime, workspaceLocation, EVAL_SILENT);
 }

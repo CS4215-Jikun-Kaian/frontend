@@ -161,9 +161,7 @@ type ReplHistory = {
 
 export type DebuggerContext = {
   result: any;
-  lastDebuggerResult: any;
   code: string;
-  context: Context;
   workspaceLocation?: WorkspaceLocation;
 };
 

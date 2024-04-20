@@ -50,22 +50,7 @@ type RawTab = (provider: ReturnType<typeof requireProvider>) => { default: Modul
  * @param debuggerContext - DebuggerContext object from redux store
  */
 export function getDynamicTabs(debuggerContext: DebuggerContext): SideContentTab[] {
-  const moduleContexts = debuggerContext?.context?.moduleContexts;
-
-  if (!moduleContexts) return [];
-
-  return Object.values(moduleContexts)
-    .flatMap(({ tabs }) => tabs ?? [])
-    .map((rawTab: RawTab) => {
-      const { default: content } = rawTab(requireProvider);
-      return content;
-    })
-    .filter(({ toSpawn }) => !toSpawn || toSpawn(debuggerContext))
-    .map(tab => ({
-      ...tab,
-      body: tab.body(debuggerContext),
-      id: SideContentType.module
-    }));
+  return [];
 }
 
 export const generateIconId = (tabId: TabId) => `${tabId}-icon`;

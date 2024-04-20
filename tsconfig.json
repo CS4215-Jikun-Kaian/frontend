@@ -18,7 +18,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,

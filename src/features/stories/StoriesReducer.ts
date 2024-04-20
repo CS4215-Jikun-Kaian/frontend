@@ -76,62 +76,6 @@ const oldStoriesReducer: Reducer<StoriesState, SourceActionType> = (
   let newOutput: InterpreterOutput[];
   let lastOutput: InterpreterOutput;
   switch (action.type) {
-    case EVAL_STORY_ERROR:
-      lastOutput = state.envs[env].output.slice(-1)[0];
-      if (lastOutput !== undefined && lastOutput.type === 'running') {
-        newOutput = state.envs[env].output.slice(0, -1).concat({
-          type: action.payload.type,
-          errors: action.payload.errors,
-          consoleLogs: lastOutput.consoleLogs
-        } as ErrorOutput);
-      } else {
-        newOutput = state.envs[env].output.concat({
-          type: action.payload.type,
-          errors: action.payload.errors,
-          consoleLogs: []
-        } as ErrorOutput);
-      }
-      return {
-        ...state,
-        envs: {
-          ...state.envs,
-          [env]: {
-            ...state.envs[env],
-            output: newOutput,
-            isRunning: false
-          }
-        }
-      };
-    case EVAL_STORY_SUCCESS:
-      const execType = state.envs[env].context.executionMethod;
-      const newOutputEntry: Partial<ResultOutput> = {
-        type: action.payload.type as 'result' | undefined,
-        value: execType === 'interpreter' ? action.payload.value : stringify(action.payload.value)
-      };
-      lastOutput = state.envs[env].output.slice(-1)[0];
-      if (lastOutput !== undefined && lastOutput.type === 'running') {
-        newOutput = state.envs[env].output.slice(0, -1).concat({
-          consoleLogs: lastOutput.consoleLogs,
-          ...newOutputEntry
-        } as ResultOutput);
-      } else {
-        newOutput = state.envs[env].output.concat({
-          consoleLogs: [],
-          ...newOutputEntry
-        } as ResultOutput);
-      }
-
-      return {
-        ...state,
-        envs: {
-          ...state.envs,
-          [env]: {
-            ...state.envs[env],
-            output: newOutput,
-            isRunning: false
-          }
-        }
-      };
     case HANDLE_STORIES_CONSOLE_LOG:
       /* Possible cases:
        * (1) state.envs[env].output === [], i.e. state.envs[env].output[-1] === undefined
@@ -162,27 +106,6 @@ const oldStoriesReducer: Reducer<StoriesState, SourceActionType> = (
           }
         }
       };
-    case NOTIFY_STORIES_EVALUATED: {
-      const debuggerContext: DebuggerContext = {
-        ...state.envs[env].debuggerContext,
-        result: action.payload.result,
-        lastDebuggerResult: action.payload.lastDebuggerResult,
-        code: action.payload.code,
-        context: action.payload.context,
-        workspaceLocation: 'stories'
-      };
-
-      return {
-        ...state,
-        envs: {
-          ...state.envs,
-          [env]: {
-            ...state.envs[env],
-            debuggerContext
-          }
-        }
-      };
-    }
     case TOGGLE_STORIES_USING_SUBST:
       return {
         ...state,

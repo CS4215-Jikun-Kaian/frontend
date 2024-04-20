@@ -16,7 +16,6 @@ import {
   END_DEBUG_PAUSE,
   END_INTERRUPT_EXECUTION,
   EVAL_INTERPRETER_ERROR,
-  EVAL_INTERPRETER_SUCCESS,
   EVAL_TESTCASE_FAILURE,
   EVAL_TESTCASE_SUCCESS,
   HANDLE_CONSOLE_LOG,
@@ -572,69 +571,6 @@ describe('EVAL_INTERPRETER_ERROR', () => {
             { ...outputWithRunningAndCodeOutput[0] },
             { ...outputWithRunningAndCodeOutput[1] },
             { consoleLogs: [] }
-          ]
-        }
-      });
-    });
-  });
-});
-
-describe('EVAL_INTERPRETER_SUCCESS', () => {
-  test('works correctly with RunningOutput', () => {
-    const isRunning = true;
-    const breakpoints = ['1', '2'];
-    const highlightedLines = [[3], [5]];
-
-    const evalEditorDefaultState: WorkspaceManagerState = generateDefaultWorkspace({
-      output: outputWithRunningOutput,
-      isRunning,
-      editorTabs: [{ highlightedLines, breakpoints }]
-    });
-
-    const actions = generateActions(EVAL_INTERPRETER_SUCCESS);
-
-    actions.forEach(action => {
-      const result = WorkspaceReducer(evalEditorDefaultState, action);
-      const location: WorkspaceLocation = action.payload.workspaceLocation;
-      expect(result).toEqual({
-        ...evalEditorDefaultState,
-        [location]: {
-          ...evalEditorDefaultState[location],
-          isRunning: false,
-          output: [
-            { ...outputWithRunningOutput[0] },
-            { consoleLogs: ['console-log-test-2'], value: 'undefined' }
-          ]
-        }
-      });
-    });
-  });
-
-  test('works correctly with other outputs', () => {
-    const isRunning = true;
-    const breakpoints = ['1', '2'];
-    const highlightedLines = [[3], [5]];
-
-    const evalEditorDefaultState: WorkspaceManagerState = generateDefaultWorkspace({
-      output: outputWithRunningAndCodeOutput,
-      isRunning,
-      editorTabs: [{ highlightedLines, breakpoints }]
-    });
-
-    const actions = generateActions(EVAL_INTERPRETER_SUCCESS);
-
-    actions.forEach(action => {
-      const result = WorkspaceReducer(evalEditorDefaultState, action);
-      const location: WorkspaceLocation = action.payload.workspaceLocation;
-      expect(result).toEqual({
-        ...evalEditorDefaultState,
-        [location]: {
-          ...evalEditorDefaultState[location],
-          isRunning: false,
-          output: [
-            { ...outputWithRunningAndCodeOutput[0] },
-            { ...outputWithRunningAndCodeOutput[1] },
-            { consoleLogs: [], value: 'undefined' }
           ]
         }
       });

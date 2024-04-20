@@ -69,13 +69,13 @@ test('evalTestcaseSuccess generates correct action object', () => {
 });
 
 test('evalInterpreterError generates correct action object', () => {
-  const errors: any = [];
-  const action = evalInterpreterError(errors, assessmentWorkspace);
+  const error = new Error();
+  const action = evalInterpreterError(error, assessmentWorkspace);
   expect(action).toEqual({
     type: EVAL_INTERPRETER_ERROR,
     payload: {
       type: 'errors',
-      errors,
+      error,
       workspaceLocation: assessmentWorkspace
     }
   });
